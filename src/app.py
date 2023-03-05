@@ -19,6 +19,8 @@ def handler(event, context):
             return return_error_response("missing or malformed request body", 412)
     except Exception as err:
         return return_error_response("cannot proceed with the request error: " + str(err), 500)
+    except FileNotFoundError as ex:
+        return return_error_response("case not found: " + str(ex), 404)
 
 
 def update_case(request):
@@ -26,7 +28,7 @@ def update_case(request):
     case_id = request['pathParameters']['case_id']
 
     case = get_item("case_id", case_id)
-    if case is []:
+    if case == []:
         raise FileNotFoundError("not found [case:{0}".format(case_id))
     case['status'] = parsed_body['status']
     case['creation_date'] = str(date.today())
