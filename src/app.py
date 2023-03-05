@@ -11,10 +11,9 @@ ENV_TABLE_NAME = "dermoapp-patient-cases"
 def handler(event, context):
     try:
         print("lambda execution with context {0}".format(str(context)))
-        if validate_property_exist("patient_id", event['pathParameters']) and validate_property_exist('body', event):
+        if validate_query_params(event) and validate_property_exist('body', event):
             if validate_body_params(event['body']):
-                patient_id = event['pathParameters']['patient_id']
-                response = add_patient_profile(event, patient_id)
+                response = update_case(event)
                 return return_status_ok(response)
         else:
             return return_error_response("missing or malformed request body", 412)
@@ -22,10 +21,19 @@ def handler(event, context):
         return return_error_response("cannot proceed with the request error: " + str(err), 500)
 
 
-def add_patient_profile(request, patient_id):
+def update_case(request):
     parsed_body = json.loads(request["body"])
-    parsed_body['patient_id']=  patient_id
-    parsed_body['creation_date'] = str(date.today())
-    parsed_body['status'] = "created"
-    insert_item(parsed_body)
-    return get_item("case_id", parsed_body['case_id'])
+    case_id = request['pathParameters']['case_id']
+
+    case = get_item("case_id", case_id)
+    if case is []:
+        raise FileNotFoundError("not found [case:{0}".format(case_id))
+    case['status'] = parsed_body['status']
+    case['creation_date'] = str(date.today())
+    insert_item(case)
+    return get_item("case_id", case_id)
+
+
+def validate_query_params(request):
+    return validate_property_exist("patient_id", request['pathParameters']) and \
+        validate_property_exist("patient_id", request['pathParameters'])
