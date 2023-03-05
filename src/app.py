@@ -28,7 +28,7 @@ def update_case(request):
     case_id = request['pathParameters']['case_id']
 
     case = get_item("case_id", case_id)
-    if case == []:
+    if not case:
         raise FileNotFoundError("not found [case:{0}".format(case_id))
     case['status'] = parsed_body['status']
     case['creation_date'] = str(date.today())
