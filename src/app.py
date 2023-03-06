@@ -17,10 +17,11 @@ def handler(event, context):
                 return return_status_ok(response)
         else:
             return return_error_response("missing or malformed request body", 412)
-    except Exception as err:
-        return return_error_response("cannot proceed with the request error: " + str(err), 500)
     except FileNotFoundError as ex:
         return return_error_response("case not found: " + str(ex), 404)
+    except Exception as err:
+        return return_error_response("cannot proceed with the request error: " + str(err), 500)
+
 
 
 def update_case(request):
