@@ -1,6 +1,6 @@
 import json
 
-body_properties = ["case_id", "injury_type", "shape", "number_of_lessions", "distributions", "color"]
+body_properties = ["status"]
 
 
 def validate_body_params(body):
